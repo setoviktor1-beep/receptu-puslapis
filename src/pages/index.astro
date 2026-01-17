@@ -1,16 +1,31 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Receptų Blogas: LT x Korea Fusion">
+	<h1>Sveiki atvykę į LT x Korea Fusion virtuvę!</h1>
+  <p class="intro">
+    Čia rasite unikalius lietuviškus, korėjietiškus ir fusion receptus.
+    Kas 4 valandas publikuojame po naują receptą!
+  </p>
+
+  <section>
+    <h2>Naujausi receptai</h2>
+    <p>Receptų kol kas nėra. Užsukite vėliau!</p>
+    <!-- TODO: List latest recipes here -->
+  </section>
+</Layout>
+
+<style>
+  h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .intro {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    color: #555;
+  }
+</style>

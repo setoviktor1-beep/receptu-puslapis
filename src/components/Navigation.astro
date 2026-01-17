@@ -1,0 +1,62 @@
+---
+const categories = [
+  "vegetariski",
+  "mesa", 
+  "paukstiena",
+  "zuvis",
+  "sriubos",
+  "desertai",
+  "korejietiski",
+  "lietuviski",
+  "fusion"
+];
+---
+<nav>
+  <div class="nav-content">
+    <a href="/" class="logo">Receptų Blogas</a>
+    <ul>
+      <li><a href="/recipes">Visi receptai</a></li>
+      {categories.map((cat) => (
+        <li><a href={`/recipes/category/${cat}`}>{cat}</a></li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  nav {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+  }
+  .nav-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .logo {
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-decoration: none;
+    color: #333;
+  }
+  ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+  }
+  a {
+    text-decoration: none;
+    color: #555;
+    text-transform: capitalize;
+  }
+  a:hover {
+    color: #000;
+  }
+</style>
