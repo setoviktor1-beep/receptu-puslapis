@@ -1,0 +1,167 @@
+{
+  "project": "receptu-puslapis",
+  "rules": [
+    "First read AGENT.md and SPEC.md.",
+    "Do tasks in order. Do not skip.",
+    "After each task: run tests/build if applicable.",
+    "Commit after each completed task with a short message."
+  ],
+  "tasks": [
+    {
+      "id": "M0-1",
+      "title": "Initialize git + basic project skeleton",
+      "steps": [
+        "Ensure this folder is a git repo",
+        "Create .gitignore for Node/Astro",
+        "Create README.md with placeholder"
+      ],
+      "acceptance": [
+        "git status shows a clean repo",
+        ".gitignore exists",
+        "README.md exists"
+      ]
+    },
+    {
+      "id": "M0-2",
+      "title": "Create Astro project",
+      "steps": [
+        "Create an Astro site in this folder (TypeScript)",
+        "Install deps",
+        "Verify npm run dev works"
+      ],
+      "acceptance": [
+        "Astro project files exist",
+        "npm run dev starts without errors"
+      ]
+    },
+    {
+      "id": "M0-3",
+      "title": "Create base pages + layout",
+      "steps": [
+        "Create Home page",
+        "Create header/nav with categories link",
+        "Create footer with contact placeholder"
+      ],
+      "acceptance": [
+        "Home loads",
+        "Nav exists",
+        "Footer exists"
+      ]
+    },
+    {
+      "id": "M1-1",
+      "title": "Add recipes content collection",
+      "steps": [
+        "Create content folder src/content/recipes/",
+        "Define schema/frontmatter fields per SPEC.md",
+        "Add 2 sample recipes (Markdown)"
+      ],
+      "acceptance": [
+        "Two recipe markdown files exist",
+        "Build succeeds with content collection enabled"
+      ]
+    },
+    {
+      "id": "M1-2",
+      "title": "Create recipes listing page",
+      "steps": [
+        "Create /recipes page listing latest recipes",
+        "Show title, category, date, time_minutes, image thumbnail"
+      ],
+      "acceptance": [
+        "/recipes page renders and lists sample recipes"
+      ]
+    },
+    {
+      "id": "M1-3",
+      "title": "Create single recipe page",
+      "steps": [
+        "Create dynamic route for recipe slug",
+        "Render recipe content + image + metadata"
+      ],
+      "acceptance": [
+        "Clicking a recipe opens its own page",
+        "No broken routes"
+      ]
+    },
+    {
+      "id": "M1-4",
+      "title": "Add category pages",
+      "steps": [
+        "Create category listing pages",
+        "Filter recipes by category",
+        "Add category navigation UI"
+      ],
+      "acceptance": [
+        "Each category page shows only that category recipes"
+      ]
+    },
+    {
+      "id": "M2-1",
+      "title": "Add generator script (text-only first)",
+      "steps": [
+        "Create scripts/generate_recipe.py (or generate_recipe.js)",
+        "Generate 1 new recipe Markdown with unique slug",
+        "Choose random category from allowed list",
+        "Fill realistic ingredients + steps + time_minutes + difficulty",
+        "Write into src/content/recipes/"
+      ],
+      "acceptance": [
+        "Running the script creates exactly 1 new recipe file",
+        "Slug is unique",
+        "Frontmatter matches schema"
+      ]
+    },
+    {
+      "id": "M2-2",
+      "title": "Add image handling (placeholder or real)",
+      "steps": [
+        "If API key configured: generate an image and save to public/images/recipes/",
+        "If no API: create a placeholder image file reference and use a default image",
+        "Ensure site builds with images"
+      ],
+      "acceptance": [
+        "Each generated recipe has an image path that resolves",
+        "No broken images on recipe page"
+      ]
+    },
+    {
+      "id": "M2-3",
+      "title": "GitHub Actions cron (every 4 hours) to generate + commit",
+      "steps": [
+        "Create .github/workflows/auto_recipe.yml",
+        "Schedule: every 4 hours",
+        "Run generator script",
+        "Commit + push changes"
+      ],
+      "acceptance": [
+        "Workflow file exists",
+        "Manual run (workflow_dispatch) succeeds"
+      ]
+    },
+    {
+      "id": "M2-4",
+      "title": "Deploy to GitHub Pages",
+      "steps": [
+        "Add build workflow for Pages",
+        "Ensure correct base path for Pages",
+        "Verify deploy action outputs Pages URL"
+      ],
+      "acceptance": [
+        "Pages build succeeds",
+        "Site is accessible via GitHub Pages URL"
+      ]
+    },
+    {
+      "id": "M2-5",
+      "title": "Finalize docs",
+      "steps": [
+        "Update README: local dev, generate recipe, how cron works, how to set secrets",
+        "Add troubleshooting section"
+      ],
+      "acceptance": [
+        "README is clear and complete"
+      ]
+    }
+  ]
+}
