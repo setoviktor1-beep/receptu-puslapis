@@ -48,6 +48,7 @@ const MOCK_RECIPES = [
 async function generateRecipe() {
     const apiKey = process.env.OPENAI_API_KEY;
     let recipeData;
+    let imagePath = "/images/recipes/default.svg";
 
     if (apiKey) {
         console.log("Using OpenAI API to generate recipe...");
@@ -79,6 +80,43 @@ async function generateRecipe() {
             });
 
             recipeData = JSON.parse(completion.choices[0].message.content);
+
+            // Generate Image
+            console.log("Generating image...");
+            try {
+                const imagePrompt = `Professional food photography of ${recipeData.title}, high resolution, delicious, appetizing, 4k`;
+                const imageResponse = await openai.images.generate({
+                    model: "dall-e-3",
+                    prompt: imagePrompt,
+                    n: 1,
+                    size: "1024x1024",
+                });
+
+                const imageUrl = imageResponse.data[0].url;
+                if (imageUrl) {
+                    const imageSlug = slugify(recipeData.title, { lower: true, strict: true });
+                    const imageFileName = `${imageSlug}-${Date.now()}.jpg`;
+                    const localImagePath = path.join(IMAGES_DIR, imageFileName);
+                    const publicPath = `/images/recipes/${imageFileName}`;
+
+                    // Ensure dir exists
+                    if (!fs.existsSync(IMAGES_DIR)) {
+                        fs.mkdirSync(IMAGES_DIR, { recursive: true });
+                    }
+
+                    // Download image
+                    const imgRes = await fetch(imageUrl);
+                    const buffer = await imgRes.arrayBuffer();
+                    fs.writeFileSync(localImagePath, Buffer.from(buffer));
+                    console.log(`Image saved to ${localImagePath}`);
+
+                    imagePath = publicPath;
+                }
+            } catch (imgError) {
+                console.error("Error generating/saving image:", imgError);
+                // Fallback to default
+            }
+
         } catch (error) {
             console.error("Error calling OpenAI:", error);
             console.log("Falling back to mock data.");
@@ -106,7 +144,7 @@ category: "${recipeData.category}"
 tags: ${JSON.stringify(recipeData.tags)}
 time_minutes: ${recipeData.time_minutes}
 difficulty: "${recipeData.difficulty}"
-image: "/images/recipes/default.jpg"
+image: "${imagePath}"
 ---`;
 
     const body = `
