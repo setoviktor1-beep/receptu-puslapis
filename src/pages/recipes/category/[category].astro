@@ -1,0 +1,140 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const recipes = await getCollection('recipes');
+  // Get unique categories
+  const categories = [...new Set(recipes.map(recipe => recipe.data.category))];
+  
+  // Also, we need to support ALL categories even if empty?
+  // SPEC.md listed categories. If we only generate for used ones, empty categories won't have pages.
+  // The Navigation component links to all.
+  // Ideally, we should define the list of allowed categories and generate pages for all of them.
+  const allowedCategories = [
+      'vegetariski',
+      'mesa',
+      'paukstiena',
+      'zuvis',
+      'sriubos',
+      'desertai',
+      'korejietiski',
+      'lietuviski',
+      'fusion'
+  ];
+
+  return allowedCategories.map(category => {
+    const filteredRecipes = recipes.filter(r => r.data.category === category);
+    return {
+      params: { category },
+      props: { recipes: filteredRecipes, category },
+    };
+  });
+}
+
+const { category, recipes } = Astro.props;
+const sortedRecipes = recipes.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Layout title={`${category.charAt(0).toUpperCase() + category.slice(1)} Receptai | Receptų Blogas`}>
+  <div class="category-header">
+    <h1>Kategorija: <span class="highlight">{category}</span></h1>
+    <a href="/recipes" class="view-all">Rodyti visus</a>
+  </div>
+
+  {recipes.length === 0 ? (
+    <p class="empty-state">Šioje kategorijoje receptų kol kas nėra.</p>
+  ) : (
+    <ul class="recipe-grid">
+      {sortedRecipes.map((recipe) => (
+        <li class="recipe-card">
+          <a href={`/recipes/${recipe.slug}`}>
+            <img src={recipe.data.image} alt={recipe.data.title} onerror="this.src='/favicon.svg'" />
+            <div class="content">
+              <h2>{recipe.data.title}</h2>
+              <div class="meta">
+                <time datetime={recipe.data.date.toISOString()}>
+                  {recipe.data.date.toLocaleDateString('lt-LT')}
+                </time>
+                <span>•</span>
+                <span>{recipe.data.time_minutes} min.</span>
+              </div>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</Layout>
+
+<style>
+  .category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 1rem;
+  }
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+  }
+  .highlight {
+    color: var(--accent);
+    text-transform: capitalize;
+  }
+  .view-all {
+    text-decoration: none;
+    color: #666;
+    font-weight: bold;
+  }
+  .view-all:hover {
+    color: #000;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+    font-size: 1.2rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+  }
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 0;
+    list-style: none;
+  }
+  .recipe-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+  .recipe-card:hover {
+    transform: translateY(-5px);
+  }
+  .recipe-card a {
+    text-decoration: none;
+    color: inherit;
+  }
+  .recipe-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  .content {
+    padding: 1rem;
+  }
+  h2 {
+    margin: 0.5rem 0;
+    font-size: 1.2rem;
+  }
+  .meta {
+    font-size: 0.9rem;
+    color: #888;
+  }
+</style>
