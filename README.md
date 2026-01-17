@@ -1,7 +1,7 @@
 # Receptų Blogas: LT x Korea Fusion
 
 Tai yra statinis receptų blogas, sukurtas su **Astro**.
-Puslapis automatiškai generuoja naujus receptus kas 4 valandas naudodamas **OpenAI API** ir **GitHub Actions**.
+Puslapis automatiškai generuoja naujus receptus kas 4 valandas naudodamas **Google Gemini API** ir **GitHub Actions**.
 
 ## Funkcijos
 
@@ -9,7 +9,7 @@ Puslapis automatiškai generuoja naujus receptus kas 4 valandas naudodamas **Ope
 - **Turinio kolekcijos**: Receptai saugomi kaip Markdown failai (`src/content/recipes/`).
 - **Kategorijos**: Automatinis filtravimas pagal kategoriją (Vegetariški, Korean, Lithuanian, Fusion ir kt.).
 - **Automatizacija**: `generate_recipe.js` skriptas sukuria naują receptą ir deda jį į git repo.
-- **Vaizdai**: Generuojami su DALL-E (reikalingas API raktas), arba naudojamas placeholder.
+- **Vaizdai**: Naudojami estetiški SVG placeholderiai (vaizdų generavimo atsisakyta siekiant supaprastinimo).
 
 ## Kaip paleisti lokaliai
 
@@ -41,8 +41,10 @@ Norint sugeneruoti naują receptą rankiniu būdu:
 1. Sukurkite `.env` failą šakniniame kataloge:
 
    ```
-   OPENAI_API_KEY=sk-....
+   GEMINI_API_KEY=AIzaSy...
    ```
+
+   (Raktą galite gauti [Google AI Studio](https://aistudio.google.com/app/apikey))
 
 2. Paleiskite skriptą:
 
@@ -58,8 +60,8 @@ Norint, kad automatinis generavimas veiktų GitHub'e:
 
 1. Nueikite į repo **Settings** > **Secrets and variables** > **Actions**.
 2. Sukurkite **New repository secret**:
-   - Name: `OPENAI_API_KEY`
-   - Value: Jūsų OpenAI API raktas.
+   - Name: `GEMINI_API_KEY`
+   - Value: Jūsų Google Gemini API raktas.
 
 3. Įsitikinkite, kad "Workflow permissions" (pagal **Settings** > **Actions** > **General**) yra nustatytos:
    - **Read and write permissions** (kad workflow galėtų daryti git push).

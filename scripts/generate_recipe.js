@@ -1,7 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import 'dotenv/config';
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// ...
 import slugify from 'slugify';
 
 const RECIPES_DIR = path.join(process.cwd(), 'src/content/recipes');
@@ -46,19 +48,22 @@ const MOCK_RECIPES = [
 ];
 
 async function generateRecipe() {
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
     let recipeData;
     let imagePath = "/images/recipes/default.svg";
 
     if (apiKey) {
-        console.log("Using OpenAI API to generate recipe...");
-        const openai = new OpenAI({ apiKey });
+        console.log("Using Gemini API to generate recipe...");
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
         const prompt = `
       Generuok receptą šiam blogui: "Receptų blogas: LT x Korea Fusion".
       Kategorijos: ${CATEGORIES.join(', ')}.
       
-      Grąžink tik JSON formatu be jokių papildomų tekstų (Markdown blocks ir pan.):
+      Grąžink tik JSON formatu be jokių papildomų tekstų (Markdown blocks ir pan.).
+      
+      JSON schema:
       {
         "title": "Pavadinimas",
         "category": "viena iš kategorijų",
@@ -69,61 +74,25 @@ async function generateRecipe() {
         "tags": ["tag1", "tag2"]
       }
       
-      Stenkis sukurti įdomų, unikalų receptą.
+      Stenkis sukurti įdomų, unikalų receptą. Nenaudok md code blocku, tik raw JSON.
     `;
 
         try {
-            const completion = await openai.chat.completions.create({
-                messages: [{ role: "user", content: prompt }],
-                model: "gpt-4-turbo-preview", // or gpt-3.5-turbo
-                response_format: { type: "json_object" },
-            });
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text();
 
-            recipeData = JSON.parse(completion.choices[0].message.content);
+            // Clean up if Gemini wraps in markdown code block
+            const cleanedText = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
-            // Generate Image
-            console.log("Generating image...");
-            try {
-                const imagePrompt = `Professional food photography of ${recipeData.title}, high resolution, delicious, appetizing, 4k`;
-                const imageResponse = await openai.images.generate({
-                    model: "dall-e-3",
-                    prompt: imagePrompt,
-                    n: 1,
-                    size: "1024x1024",
-                });
-
-                const imageUrl = imageResponse.data[0].url;
-                if (imageUrl) {
-                    const imageSlug = slugify(recipeData.title, { lower: true, strict: true });
-                    const imageFileName = `${imageSlug}-${Date.now()}.jpg`;
-                    const localImagePath = path.join(IMAGES_DIR, imageFileName);
-                    const publicPath = `/images/recipes/${imageFileName}`;
-
-                    // Ensure dir exists
-                    if (!fs.existsSync(IMAGES_DIR)) {
-                        fs.mkdirSync(IMAGES_DIR, { recursive: true });
-                    }
-
-                    // Download image
-                    const imgRes = await fetch(imageUrl);
-                    const buffer = await imgRes.arrayBuffer();
-                    fs.writeFileSync(localImagePath, Buffer.from(buffer));
-                    console.log(`Image saved to ${localImagePath}`);
-
-                    imagePath = publicPath;
-                }
-            } catch (imgError) {
-                console.error("Error generating/saving image:", imgError);
-                // Fallback to default
-            }
-
+            recipeData = JSON.parse(cleanedText);
         } catch (error) {
-            console.error("Error calling OpenAI:", error);
+            console.error("Error calling Gemini:", error);
             console.log("Falling back to mock data.");
             recipeData = getRandomMock();
         }
     } else {
-        console.log("No OpenAI Key found. Using mock data.");
+        console.log("No Gemini Key found. Using mock data.");
         recipeData = getRandomMock();
     }
 

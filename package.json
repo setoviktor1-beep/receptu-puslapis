@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "astro": "^5.16.11",
     "dotenv": "^17.2.3",
     "openai": "^6.16.0",
