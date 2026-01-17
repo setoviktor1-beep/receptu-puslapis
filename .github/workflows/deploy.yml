@@ -4,6 +4,10 @@ on:
   push:
     branches: [ master, main ]
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Auto Generate Recipe"]
+    types:
+      - completed
 
 permissions:
   contents: read
