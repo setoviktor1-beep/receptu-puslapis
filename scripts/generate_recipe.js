@@ -48,14 +48,14 @@ const MOCK_RECIPES = [
 ];
 
 async function generateRecipe() {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : "";
     let recipeData;
     let imagePath = "/images/recipes/default.svg";
 
     if (apiKey) {
         console.log("Using Gemini API to generate recipe...");
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const prompt = `
       Generuok receptą šiam blogui: "Receptų blogas: LT x Korea Fusion".
