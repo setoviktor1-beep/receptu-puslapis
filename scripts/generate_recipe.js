@@ -55,7 +55,7 @@ async function generateRecipe() {
     if (apiKey) {
         console.log("Using Gemini API to generate recipe...");
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
         const prompt = `
       Generuok receptą šiam blogui: "Receptų blogas: LT x Korea Fusion".
